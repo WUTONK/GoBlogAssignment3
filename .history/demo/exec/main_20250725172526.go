@@ -98,7 +98,7 @@ func main() {
 	fmt.Println(context)
 	fmt.Printf("error %s\n", err)
 	// delete(db)
-	isUserContextNotEmpty(db, "LEN")
+	isUserContextNotEmpty(db, "LENA")
 
 	// 添加流程: 用户进入 /user/post 页面 -> 发一条post —> 后端查找是否有该用户在数据库中 没有就新建 (如果有)-> 在 context 中追加
 	// 删除最后一条流程: 用户进入 /user/post 页面 -> 删除最后一条 —> 后端查找是否有该用户在数据库中 没有就报错 (如果有)-> 在 context 中弹出最后一条

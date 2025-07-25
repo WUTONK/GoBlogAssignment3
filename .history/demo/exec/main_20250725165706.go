@@ -23,7 +23,7 @@ func delete(db *sql.DB) {
 
 func insert(db *sql.DB) {
 	insertSQL := "INSERT INTO user_context (username, context) VALUES ($1, $2)"
-	_, err := db.Exec(insertSQL, "LENA", "")
+	_, err := db.Exec(insertSQL, "ME", "HI GIN!")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -60,26 +60,9 @@ func selectContext(db *sql.DB, username string) (string, error) {
 	return context, nil
 }
 
-func isUserContextNotEmpty(db *sql.DB, username string) (bool, bool, error) {
-	var context string
-	var UserExist, contextExist bool = true, true
-	err := db.QueryRow("SELECT context FROM user_context WHERE username = $1", username).Scan(&context)
-	if err != nil {
-		strErr := fmt.Sprint(err)
-		if strErr == "sql: no rows in result set" {
-			UserExist = false
-			fmt.Println("用户不存在")
-		} else {
-			fmt.Printf("出现了查询不到用户外的其他错误: %s\n", err)
-		}
-	}
+func isUserContextNotEmpty(db *sql.DB, username string) (string, error) {
+	var UserExist, contextExist bool
 
-	if context == "" {
-		contextExist = false
-		fmt.Println("用户没有对应的context")
-	}
-
-	return UserExist, contextExist, err
 }
 
 func main() {
@@ -92,13 +75,11 @@ func main() {
 	fmt.Println("成功打开数据库")
 	defer db.Close()
 
-	// insert(db)
-	// selectAll(db)
-	context, err := selectContext(db, "LENA")
+	insert(db)
+	selectAll(db)
+	context, _ := selectContext(db, "WUTONK")
 	fmt.Println(context)
-	fmt.Printf("error %s\n", err)
 	// delete(db)
-	isUserContextNotEmpty(db, "LEN")
 
 	// 添加流程: 用户进入 /user/post 页面 -> 发一条post —> 后端查找是否有该用户在数据库中 没有就新建 (如果有)-> 在 context 中追加
 	// 删除最后一条流程: 用户进入 /user/post 页面 -> 删除最后一条 —> 后端查找是否有该用户在数据库中 没有就报错 (如果有)-> 在 context 中弹出最后一条
@@ -106,5 +87,5 @@ func main() {
 	// 查询流程: 用户进入 /user/posts 页面 -> 后端查找是否有该用户在数据库中且context不为空 空就返回 nil (如果有)-> 将context读取后返回给前端 ->前端解析
 	// 需解耦函数：1.查找是否有该用户在数据库中 和该用户context不为空  2.在context中追加和清空  3.将context返回给后端
 
-	// api所需接口 sqlRsq: 'delAll' / 'delLast' / 'add' .  sqlRsp: <string>.
+	// api所需接口 sqlRsq: 'delAll' / 'delLast' / 'add' .  sqlRsp: 'nil' / ''
 }
