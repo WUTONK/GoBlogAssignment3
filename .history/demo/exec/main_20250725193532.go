@@ -51,7 +51,6 @@ func selectAll(db *sql.DB) {
 	}
 }
 
-// 查询用户的 Context并返回
 func selectContext(db *sql.DB, username string) (string, error) {
 	var context string
 	err := db.QueryRow("SELECT context FROM user_context WHERE username = $1", username).Scan(&context)
