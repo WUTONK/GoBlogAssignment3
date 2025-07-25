@@ -56,7 +56,7 @@ func selectContext(db *sql.DB, username string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	fmt.Printf("---select context by user '%s'--- \n", username)
+	fmt.Println("---select context by user")
 	return context, nil
 }
 
@@ -72,8 +72,7 @@ func main() {
 
 	insert(db)
 	selectAll(db)
-	context, _ := selectContext(db, "WUTONK")
-	fmt.Println(context)
+	fmt.Println(selectContext(db, "ME"))
 	// delete(db)
 
 }

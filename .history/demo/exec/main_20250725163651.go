@@ -72,7 +72,7 @@ func main() {
 
 	insert(db)
 	selectAll(db)
-	context, _ := selectContext(db, "WUTONK")
+	context, _ := selectContext(db, "ME")
 	fmt.Println(context)
 	// delete(db)
 

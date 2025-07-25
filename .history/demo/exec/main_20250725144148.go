@@ -52,11 +52,10 @@ func selectAll(db *sql.DB) {
 
 func selectContext(db *sql.DB, username string) (string, error) {
 	var context string
-	err := db.QueryRow("SELECT context FROM user_context WHERE username = $1", username).Scan(&context)
+	err := db.QueryRow("SELECT context FROM user_context WHERE username = ?", username).Scan(&context)
 	if err != nil {
 		return "", err
 	}
-	fmt.Printf("---select context by user '%s'--- \n", username)
 	return context, nil
 }
 
@@ -70,10 +69,9 @@ func main() {
 	fmt.Println("成功打开数据库")
 	defer db.Close()
 
-	insert(db)
-	selectAll(db)
-	context, _ := selectContext(db, "WUTONK")
-	fmt.Println(context)
-	// delete(db)
+	// insert(db)
+	// selectAll(db)
+	selectContext(db, "ME")
+	delete(db)
 
 }

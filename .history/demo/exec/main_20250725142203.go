@@ -30,7 +30,7 @@ func insert(db *sql.DB) {
 	fmt.Println("数据插入成功！")
 }
 
-func selectAll(db *sql.DB) {
+func selectUsers(db *sql.DB) {
 	// 查询用户表
 	query := "SELECT username, context FROM user_context"
 	rows, err := db.Query(query)
@@ -50,16 +50,6 @@ func selectAll(db *sql.DB) {
 	}
 }
 
-func selectContext(db *sql.DB, username string) (string, error) {
-	var context string
-	err := db.QueryRow("SELECT context FROM user_context WHERE username = $1", username).Scan(&context)
-	if err != nil {
-		return "", err
-	}
-	fmt.Printf("---select context by user '%s'--- \n", username)
-	return context, nil
-}
-
 func main() {
 	dsn := "user=postgres password=123456 host=localhost port=5432 dbname=wutonkdb sslmode=disable"
 
@@ -71,9 +61,7 @@ func main() {
 	defer db.Close()
 
 	insert(db)
-	selectAll(db)
-	context, _ := selectContext(db, "WUTONK")
-	fmt.Println(context)
-	// delete(db)
+	selectUsers(db)
+	delete(db)
 
 }
