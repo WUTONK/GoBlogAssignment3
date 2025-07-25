@@ -112,9 +112,14 @@ func contextModify(db *sql.DB, username string, appendText string, mode string) 
 
 		// 标准格式："context1<slice>context2<slice>context3"
 		if context == "" {
-			context = appendText
+			context = appendText + "<slice>"
 			fmt.Printf("(context is empty)context: %s\n", context)
 		} else {
+			// 为了防止出现这样的情况：context<slice><slice>context 第二次比较特殊 不用加<slice> 故做特殊处理
+			contextSlice = strings.Split(context, "<slice>")
+			if len(contextSlice) == 1 {
+
+			}
 			context = context + "<slice>" + appendText
 			fmt.Printf("context: %s\n", context)
 		}
@@ -187,13 +192,13 @@ func main() {
 	}
 
 	// 2. 追加一条 context
-	// contextModify(db, username, "第一次留言", "append")
+	contextModify(db, username, "第一次留言", "append")
 	// 3. 再追加一条 context
-	// contextModify(db, username, "第二次留言", "append")
+	contextModify(db, username, "第二次留言", "append")
 	// 4. 弹出最后一条 context
 	// contextModify(db, username, "", "pop")
 	// 5. 清空 context
-	contextModify(db, username, "", "clear")
+	// contextModify(db, username, "", "clear")
 
 	// 6. 查询 context 并打印
 	context, err := selectContext(db, username)
@@ -216,7 +221,7 @@ func main() {
 	// 删除全部流程: 用户进入 /user/post 页面 -> 删除全部 —> 后端查找是否有该用户在数据库中 没有就报错 (如果有)-> 往 context写入空
 	// 查询流程: 用户进入 /user/posts 页面 -> 后端查找是否有该用户在数据库中且context不为空 空就返回 nil (如果有)-> 将context读取后返回给前端 ->前端解析
 	// 需解耦函数：1.查找是否有该用户在数据库中 和该用户context不为空  2.在context中追加和清空  3.将context返回给后端
-	// 1√ 2√
+	// 1√
 
 	// api所需接口 sqlRsq: 'delAll' / 'delLast' / 'add' .  sqlRsp: <string>.
 }
