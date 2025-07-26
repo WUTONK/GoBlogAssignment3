@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -17,10 +18,11 @@ import (
 // 注册路径
 func InitGin(g gin.IRouter) {
 	g.POST("/user/login", Login)
-	g.GET("/user/info", Info)
+	// g.POST("/user/postshow", postModify)
+	g.POST("/user/postModify", postModify)
 }
 
-// 校验用户
+// 校验用户名和密码
 func validUserAndPassword(incomingUsername, incomingPassword string) bool {
 
 	fmt.Printf("收到的用户名%s\n", incomingUsername)
@@ -52,13 +54,6 @@ func makeToken() string {
 	}
 	return base64.URLEncoding.EncodeToString(token)
 }
-
-// 返回报文
-func returnPost(db *sql.DB, username string) (string, error) {
-
-	return "", nil
-}
-
 func Login(c *gin.Context) {
 	var req models.LoginReq
 
@@ -76,7 +71,7 @@ func Login(c *gin.Context) {
 
 	token := makeToken()
 
-	c.JSON(http.StatusOK, models.LoginResp{
+	c.JSON(http.StatusOK, models.LoginRsp{
 		Token: token,
 	})
 	fmt.Printf("已发送token: %s\n", token)
@@ -88,40 +83,153 @@ func Login(c *gin.Context) {
 
 }
 
-// 输入报文
-func InputPost(c *gin.Context) {
-	// 逻辑：如果用户不存在 那么创建这个用户 并写入报文
-	// 逻辑：如果用户存在 那么追加报文
-	// 逻辑：删除报文
+// 报文处理
+func postModify(c *gin.Context) {
+	// mode : get / append / pop / clear
+
+	var req models.SqlReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+
+	// ---初始化---
+	dsn := "user=postgres password=123456 host=localhost port=5432 dbname=wutonkdb sslmode=disable"
+	db, err := sql.Open("postgres", dsn)
+	if err != nil {
+		panic(err.Error())
+	}
+	fmt.Println("成功打开数据库")
+	defer db.Close()
+
+	// 变量初始化
+	insertSQL := "UPDATE user_context SET context = $1 WHERE username = $2"
+	var context string
+	var contextSlice []string
+	username := req.UserName
+	token := req.Token
+	mode := req.Mode
+	appendText := req.AppendText
+
+	// 验证token
+	validResult, err := validToken(token)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		fmt.Println("调用验证token函数时发生错误")
+		return
+	}
+	if !validResult {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		fmt.Println("验证token不通过")
+		return
+	}
+
+	// context初始化
+	err = db.QueryRow("SELECT context FROM user_context WHERE username = $1", username).Scan(&context)
+	if err != nil {
+		// 如果没有用户在数据库中
+		if err != sql.ErrNoRows {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			fmt.Printf("contxt初始化发生数据库为空以外的错误: %s\n", err)
+			return
+		}
+
+		fmt.Printf("数据库为空")
+	}
+
+	// ---匹配模式---
+	switch mode {
+
+	case "get":
+		err := db.QueryRow("SELECT context FROM user_context WHERE username = $1", username).Scan(&context)
+		if err != nil {
+			fmt.Println("数据get失败!")
+			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			return
+		}
+		fmt.Printf("---select context by user '%s'--- \n", username)
+		fmt.Println(context)
+		c.JSON(http.StatusOK, models.SqlRsp{
+			Context: context,
+		})
+
+	case "append":
+
+		// 标准格式："context1<slice>context2<slice>context3"
+		if context == "" {
+			context = appendText
+			fmt.Printf("(context is empty)context: %s\n", context)
+		} else {
+			context = context + "<slice>" + appendText
+			fmt.Printf("context: %s\n", context)
+		}
+
+		// 插入数据
+		_, err = db.Exec(insertSQL, context, username)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			fmt.Println("数据append失败!")
+		}
+		fmt.Println("数据append成功!")
+		return
+
+	case "pop":
+		contextSlice = strings.Split(context, "<slice>")
+
+		// 弹出最后一个元素
+		if len(contextSlice) > 1 {
+			contextSlice = contextSlice[:len(contextSlice)-1]
+		} else {
+			contextSlice = []string{}
+		}
+
+		context = strings.Join(contextSlice, "<slice>")
+		// 插入数据
+		_, err = db.Exec(insertSQL, context, username)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			fmt.Println("数据append失败!")
+		}
+		fmt.Println("数据append成功!")
+		return
+
+	case "clear":
+		// 向 context 插入空字符串
+		_, err = db.Exec(insertSQL, "", username)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			fmt.Printf("用户%s context清空失败! \n", username)
+		}
+		fmt.Printf("用户%s context清空成功! \n", username)
+		return
+
+	}
 }
 
-func Info(c *gin.Context) {
-	// --- 校验逻辑 ---
-	authorization := c.GetHeader("Authorization") // 获取头内容
+// 校验用户token
+func validToken(reqtoken string) (bool, error) {
 
-	token, err := os.ReadFile("../tokenList/token.txt")
+	// --- 文件读取 ---
+	localToken, err := os.ReadFile("../tokenList/token.txt")
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "token 文件读取失败"})
-		return
+		fmt.Println("token 文件读取失败")
+		return false, err
 	}
-	if string(token) == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "在token缓存中不存在任何token 无法验证"})
-		fmt.Println("err:在token缓存中不存在任何token 无法验证")
-		return
+	if string(localToken) == "" {
+		fmt.Println("在token缓存中不存在任何token 无法验证")
+		return false, err
 	}
 
-	fmt.Printf("authorization:%s\n", authorization)
-	fmt.Printf("token:%s\n", string(token))
+	fmt.Printf("req_Token:%s\n", reqtoken)
+	fmt.Printf("local_Token:%s\n", string(localToken))
 
-	// --- 返回报文 ---
-	if authorization == string(token) {
-		c.JSON(http.StatusOK, models.InfoResp{
-			// NickName: "name1<slice>name2<slice>name3",
-			NickName: "",
-		})
+	// --- 校验token---
+	if reqtoken == string(localToken) {
+		fmt.Println("token验证成功")
+		return true, nil
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "传入token与本地token不一致"})
 		fmt.Println("err:传入token与本地token不一致")
+		return false, nil
 	}
 
 }

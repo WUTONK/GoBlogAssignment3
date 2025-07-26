@@ -86,18 +86,9 @@ func isUserContextNotEmpty(db *sql.DB, username string) (bool, bool, error) {
 	return UserExist, contextExist, err
 }
 
-// 在context中 追加/弹出一行/清空
+// 在context中 获取/追加/弹出一行/清空
 func contextModify(db *sql.DB, username string, appendText string, mode string) {
-	// mode : append / pop / clear
-
-	// insertSQL := "INSERT INTO user_context (username, context) VALUES ($1, $2)"
-	// _, err := db.Exec(insertSQL, "LENA", "")
-	// if err != nil {
-	// 	panic(err.Error())
-	// }
-	// fmt.Println("数据插入成功！")
-
-	// INSERT INTO user_context (username, context) VALUES ($1, $2)
+	// mode : get / append / pop / clear
 	insertSQL := "UPDATE user_context SET context = $1 WHERE username = $2"
 	var context string
 	var contextSlice []string
@@ -109,6 +100,15 @@ func contextModify(db *sql.DB, username string, appendText string, mode string) 
 	}
 
 	switch mode {
+
+	case "get":
+		err := db.QueryRow("SELECT context FROM user_context WHERE username = $1", username).Scan(&context)
+		if err != nil {
+			panic(err.Error())
+		}
+		fmt.Printf("---select context by user '%s'--- \n", username)
+		fmt.Println(context)
+
 	case "append":
 
 		// 标准格式："context1<slice>context2<slice>context3"
@@ -170,7 +170,7 @@ func main() {
 	fmt.Println("成功打开数据库")
 	defer db.Close()
 
-	username := "TESTUSER"
+	username := "kevin"
 
 	// 添加唯一约束
 	_, err = db.Exec("ALTER TABLE user_context ADD CONSTRAINT user_context_username_key UNIQUE (username);")
@@ -188,13 +188,13 @@ func main() {
 	}
 
 	// 2. 追加一条 context
-	// contextModify(db, username, "第一次留言", "append")
+	contextModify(db, username, "第一次留言", "append")
 	// 3. 再追加一条 context
 	// contextModify(db, username, "第二次留言", "append")
 	// 4. 弹出最后一条 context
 	// contextModify(db, username, "", "pop")
 	// 5. 清空 context
-	contextModify(db, username, "", "clear")
+	// contextModify(db, username, "", "clear")
 
 	// 6. 查询 context 并打印
 	context, err := selectContext(db, username)
@@ -216,8 +216,8 @@ func main() {
 	// 删除最后一条流程: 用户进入 /user/post 页面 -> 删除最后一条 —> 后端查找是否有该用户在数据库中 没有就报错 (如果有)-> 在 context 中弹出最后一条
 	// 删除全部流程: 用户进入 /user/post 页面 -> 删除全部 —> 后端查找是否有该用户在数据库中 没有就报错 (如果有)-> 往 context写入空
 	// 查询流程: 用户进入 /user/posts 页面 -> 后端查找是否有该用户在数据库中且context不为空 空就返回 nil (如果有)-> 将context读取后返回给前端 ->前端解析
-	// 需解耦函数：1.查找是否有该用户在数据库中 和该用户context不为空  2.在context中 追加/弹出/清空  3.将context返回给后端
-	// 1√ 2√
+	// 需解耦函数：1.查找是否有该用户在数据库中 和该用户context不为空  2.在context中 追加/弹出/清空  3.将context返回给前端
+	// 1√ 2√ 3√
 
 	// api所需接口 sqlRsq: 'delAll' / 'delLast' / 'add' .  sqlRsp: <string>.
 }

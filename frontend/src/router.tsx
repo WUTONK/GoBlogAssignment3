@@ -1,5 +1,6 @@
 import LoginPage from "./loginPage";
-import InfoPage from "./PostPage";
+import PostModify from "./PostModifyPage";
+import PostShowPage from "./PostShowPage";
 import { createBrowserRouter } from "react-router-dom";
 
 export const router = createBrowserRouter(
@@ -10,8 +11,13 @@ export const router = createBrowserRouter(
         },
 
         {
-            path: "/user/info",
-            element: <InfoPage/>,
+            path: "/user/postmodify",
+            element: <PostModify/>
+        },
+
+        {
+            path: "/user/postshow",
+            element: <PostShowPage/>,
         }
    ]
 )

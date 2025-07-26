@@ -7,7 +7,7 @@ mkdir -p tmp
 rm -fr src/api
 
 openapi-generator-cli generate \
-    -i wutonkGinBlog.openapi.json \
+    -i GinSqlBlog.openapi.json \
     -g typescript-fetch \
     -o ./tmp \
     --additional-properties=supportsES6=true,npmName=@wuton/api-client,typescriptThreePlus=true

@@ -8,7 +8,7 @@ mkdir -p tmp
 rm -fr models
 
 openapi-generator-cli generate \
-    -i WutonkGinBlog.openapi.json \
+    -i GinSqlBlog.openapi.json \
     -g go-gin-server \
     -o ./tmp \
     --additional-properties=packageName=models \

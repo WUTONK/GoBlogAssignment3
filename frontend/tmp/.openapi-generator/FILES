@@ -6,9 +6,10 @@ package.json
 src/apis/DefaultApi.ts
 src/apis/index.ts
 src/index.ts
-src/models/InfoResp.ts
 src/models/LoginReq.ts
-src/models/LoginResp.ts
+src/models/LoginRsp.ts
+src/models/SqlReq.ts
+src/models/SqlRsp.ts
 src/models/index.ts
 src/runtime.ts
 tsconfig.esm.json
