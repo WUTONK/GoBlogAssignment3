@@ -2,7 +2,7 @@ import { useState } from 'react'
 import './app.css'
 import { Api } from './shared'
 import Input from 'antd/es/input/Input'
-import { useNavigate } from 'react-router-dom'
+// import { useNavigate } from 'react-router-dom'
 
 function PostModify() {
   const [post, setPosts] = useState("")
@@ -40,13 +40,26 @@ function PostModify() {
           style={{ flex: 5, marginRight: 8, padding: 8 }}
         />
         <button
-          onClick={() => { }}
           style={{
             flex: 1,
             minWidth: 120, // 最小宽度
             padding: "8px 0",
             whiteSpace: "nowrap", // 不换行
             fontSize: 18
+          }}
+          onClick={() => {
+            Api.userPostModifyPost(
+              {
+                sqlReq:{
+                   mode: "append",
+                   token: localStorage.getItem("token") || "",
+                   userName: localStorage.getItem("userName") || "",
+                   appendText: post
+                }
+              }
+            ).then((res)=>{
+              setMessage(res.context)
+            }).catch((err) => {alert(err.message)})
           }}
         >
           提交本条报文
@@ -64,24 +77,46 @@ function PostModify() {
       <div style={{ display: "flex", justifyContent: "center", gap: 16 }}>
        
         <button
-          onClick={() => { }}
           style={{
             minWidth: 120,
             fontSize: 18,
             whiteSpace: "nowrap",
             padding: "8px 16px"
           }}
+          onClick={() => {
+            Api.userPostModifyPost({
+              sqlReq:{
+                mode: "pop",
+                token: localStorage.getItem("token") || "",
+                userName: localStorage.getItem("userName") || "",
+                appendText: ""
+              }
+            }).then((res)=>{
+              setMessage(res.context)
+            }).catch((err) => {alert(err.message)})
+          }}
         >
           清除最后一条报文
         </button>
 
         <button
-          onClick={() => { }}
           style={{
             minWidth: 120,
             fontSize: 18,
             whiteSpace: "nowrap",
             padding: "8px 16px"
+          }}
+          onClick={() => {
+            Api.userPostModifyPost({
+              sqlReq:{
+                mode: "clear",
+                token: localStorage.getItem("token") || "",
+                userName: localStorage.getItem("userName") || "",
+                appendText: ""
+              }
+            }).then((res)=>{
+              setMessage(res.context)
+            }).catch((err) => {alert(err.message)})
           }}
         >
           清除所有报文

@@ -18,7 +18,6 @@ import (
 // 注册路径
 func InitGin(g gin.IRouter) {
 	g.POST("/user/login", Login)
-	// g.POST("/user/postshow", postModify)
 	g.POST("/user/postModify", postModify)
 }
 
@@ -167,9 +166,10 @@ func postModify(c *gin.Context) {
 		// 插入数据
 		_, err = db.Exec(insertSQL, context, username)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			c.JSON(http.StatusBadRequest, models.SqlRsp{Context: "数据append失败!"})
 			fmt.Println("数据append失败!")
 		}
+		c.JSON(http.StatusOK, models.SqlRsp{Context: "数据append成功!"})
 		fmt.Println("数据append成功!")
 		return
 
@@ -187,20 +187,23 @@ func postModify(c *gin.Context) {
 		// 插入数据
 		_, err = db.Exec(insertSQL, context, username)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err})
-			fmt.Println("数据append失败!")
+			fmt.Println("数据pop失败!")
+			c.JSON(http.StatusBadRequest, models.SqlRsp{Context: "数据pop失败!"})
 		}
-		fmt.Println("数据append成功!")
+		fmt.Println("数据pop成功!")
+		c.JSON(http.StatusOK, models.SqlRsp{Context: "数据pop成功!"})
 		return
 
 	case "clear":
 		// 向 context 插入空字符串
 		_, err = db.Exec(insertSQL, "", username)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			c.JSON(http.StatusBadRequest, models.SqlRsp{Context: fmt.Sprintf("用户%s context清空失败! \n", username)})
 			fmt.Printf("用户%s context清空失败! \n", username)
 		}
+		// 返回结果
 		fmt.Printf("用户%s context清空成功! \n", username)
+		c.JSON(http.StatusOK, models.SqlRsp{Context: fmt.Sprintf("用户%s context清空成功! \n", username)})
 		return
 
 	}
