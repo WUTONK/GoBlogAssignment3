@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState,useEffect } from 'react'
 import './app.css'
 import { Api } from './shared'
 import Input from 'antd/es/input/Input'
@@ -7,6 +7,11 @@ import Input from 'antd/es/input/Input'
 function PostModify() {
   const [post, setPosts] = useState("")
   const [message, setMessage] = useState("") // 信息栏
+  
+  useEffect(() => {
+    // 组件加载时设置初始消息
+    setMessage("欢迎使用报文管理系统")
+  },[])
   
   return (
     <div style={{ maxWidth: 500, margin: "0 auto", padding: 20 }}>
@@ -23,8 +28,7 @@ function PostModify() {
           alignItems: "center",
           justifyContent: "center",
           fontSize: 20,
-          color: "#333",
-          backgroundColor: "#f5f5f5"
+          color: "#fff"
         }}
       >
         {message}
@@ -61,7 +65,6 @@ function PostModify() {
               }
             ).then((res)=>{
               setMessage(res.context)
-              console.log(res.context)
             }).catch((err) => {alert(err.message)})
           }}
         >
@@ -96,7 +99,6 @@ function PostModify() {
               }
             }).then((res)=>{
               setMessage(res.context)
-              console.log(res.context)
             }).catch((err) => {alert(err.message)})
           }}
         >
@@ -120,7 +122,6 @@ function PostModify() {
               }
             }).then((res)=>{
               setMessage(res.context)
-              console.log(res.context)
             }).catch((err) => {alert(err.message)})
           }}
         >

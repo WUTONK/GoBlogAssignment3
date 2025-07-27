@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState,useEffect } from 'react'
 import './app.css'
 import { Api } from './shared'
 import Input from 'antd/es/input/Input'
@@ -23,8 +23,7 @@ function PostModify() {
           alignItems: "center",
           justifyContent: "center",
           fontSize: 20,
-          color: "#333",
-          backgroundColor: "#f5f5f5"
+          color: "#fff"
         }}
       >
         {message}
@@ -61,7 +60,6 @@ function PostModify() {
               }
             ).then((res)=>{
               setMessage(res.context)
-              console.log(res.context)
             }).catch((err) => {alert(err.message)})
           }}
         >
@@ -96,7 +94,6 @@ function PostModify() {
               }
             }).then((res)=>{
               setMessage(res.context)
-              console.log(res.context)
             }).catch((err) => {alert(err.message)})
           }}
         >

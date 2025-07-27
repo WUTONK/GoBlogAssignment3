@@ -166,10 +166,10 @@ func postModify(c *gin.Context) {
 		// 插入数据
 		_, err = db.Exec(insertSQL, context, username)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, models.SqlRsp{Context: fmt.Sprintf("用户%s 报文数据append失败! \n", username)})
+			c.JSON(http.StatusBadRequest, models.SqlRsp{Context: "数据append失败!"})
 			fmt.Println("数据append失败!")
 		}
-		c.JSON(http.StatusOK, models.SqlRsp{Context: fmt.Sprintf("用户%s 报文数据append成功! \n", username)})
+		c.JSON(http.StatusOK, models.SqlRsp{Context: "数据append成功!"})
 		fmt.Println("数据append成功!")
 		return
 
@@ -191,7 +191,7 @@ func postModify(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, models.SqlRsp{Context: fmt.Sprintf("用户%s 报文pop失败! \n", username)})
 		}
 		fmt.Println("数据pop成功!")
-		c.JSON(http.StatusOK, models.SqlRsp{Context: fmt.Sprintf("用户%s 报文pop成功! \n", username)})
+		c.JSON(http.StatusBadRequest, models.SqlRsp{Context: fmt.Sprintf("用户%s 报文pop成功! \n", username)})
 		return
 
 	case "clear":
