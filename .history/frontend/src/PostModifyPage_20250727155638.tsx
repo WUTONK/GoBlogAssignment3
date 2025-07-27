@@ -63,7 +63,6 @@ function PostModify() {
             ).then((res)=>{
               setMessage(res.context)
               console.log(res.context)
-              setPosts("")
             }).catch((err) => {alert(err.message)})
           }}
         >

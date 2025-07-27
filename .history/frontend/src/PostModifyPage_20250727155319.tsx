@@ -2,12 +2,12 @@ import { useState } from 'react'
 import './app.css'
 import { Api } from './shared'
 import Input from 'antd/es/input/Input'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 
 function PostModify() {
   const [post, setPosts] = useState("")
   const [message, setMessage] = useState("") // 信息栏
-  const navigate = useNavigate()
+  Navigate = useNavigate
   
   return (
     <div style={{ maxWidth: 500, margin: "0 auto", padding: 20 }}>
@@ -63,7 +63,6 @@ function PostModify() {
             ).then((res)=>{
               setMessage(res.context)
               console.log(res.context)
-              setPosts("")
             }).catch((err) => {alert(err.message)})
           }}
         >
@@ -140,7 +139,7 @@ function PostModify() {
             padding: "8px 16px"
           }}
           onClick={() => {
-            navigate('/user/postShow')
+            navigator
           }}
         >
           postShow页面

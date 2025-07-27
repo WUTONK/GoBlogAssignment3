@@ -63,7 +63,6 @@ function PostModify() {
             ).then((res)=>{
               setMessage(res.context)
               console.log(res.context)
-              setPosts("")
             }).catch((err) => {alert(err.message)})
           }}
         >
@@ -140,7 +139,7 @@ function PostModify() {
             padding: "8px 16px"
           }}
           onClick={() => {
-            navigate('/user/postShow')
+            navigator
           }}
         >
           postShow页面

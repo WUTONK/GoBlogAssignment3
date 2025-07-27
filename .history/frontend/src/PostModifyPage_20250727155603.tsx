@@ -2,7 +2,7 @@ import { useState } from 'react'
 import './app.css'
 import { Api } from './shared'
 import Input from 'antd/es/input/Input'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 
 function PostModify() {
   const [post, setPosts] = useState("")
@@ -63,7 +63,6 @@ function PostModify() {
             ).then((res)=>{
               setMessage(res.context)
               console.log(res.context)
-              setPosts("")
             }).catch((err) => {alert(err.message)})
           }}
         >

@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 function PostModify() {
   const [post, setPosts] = useState("")
   const [message, setMessage] = useState("") // 信息栏
-  const navigate = useNavigate()
+  const navigate = useNavigate
   
   return (
     <div style={{ maxWidth: 500, margin: "0 auto", padding: 20 }}>
@@ -63,7 +63,6 @@ function PostModify() {
             ).then((res)=>{
               setMessage(res.context)
               console.log(res.context)
-              setPosts("")
             }).catch((err) => {alert(err.message)})
           }}
         >
