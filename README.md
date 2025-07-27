@@ -1,12 +1,10 @@
 # 使用须知
 
-本软件需要的数据库表格式为：username(varchar 80); context(varchar80)
+本软件需要的数据库表格式为：username(varchar 80); context(varchar80)    
 
-默认数据库名为: wutonkdb 
+标准表名为:user_context
 
-表名为:user_context
-
-密码为:123456 用户为:postgres
+以下是后端链接表的标准信息 可参考: "user=postgres password=123456 host=localhost port=5432 dbname=wutonkdb sslmode=disable"
 
 你可以复制以下脚本到你的psql中来创建一个符合要求的数据库
 ```sh
