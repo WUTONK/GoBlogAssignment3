@@ -21,7 +21,7 @@ func main() {
 
 	router.Use(cors.New(cors.Config{
 
-		AllowOrigins:     []string{"https://assignment3.wutonk.xyz"},
+		AllowOrigins:     []string{"https://assignment3.wutonk.xyz", "http://localhost:5173", "https://go-blog-assignment3.vercel.app"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
