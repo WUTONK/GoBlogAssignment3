@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import './app.css'
+import './App.css'
 import { Api } from './shared'
 import Input from 'antd/es/input/Input'
 import { useNavigate } from 'react-router-dom'

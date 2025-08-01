@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import './app.css'
+import './App.css'
 import { Button, Input, Space } from 'antd'
 import { Api } from './shared'
 import { useNavigate } from 'react-router-dom'
@@ -12,8 +12,8 @@ function LoginPage() {
   return (
     <>
      <div className='app-container'>
-     <Space direction="vertical" size="large" style={{ innerHeight: '100%' }}>
-      <Space direction="vertical" size="small" style={{ innerHeight: '100%' }}>
+     <Space direction="vertical" size="large" style={{ height: '100%' }}>
+      <Space direction="vertical" size="small" style={{ height: '100%' }}>
       <div className='input-password'>
         <Input
           type="text"
