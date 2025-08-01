@@ -76,7 +76,7 @@ func Login(c *gin.Context) {
 	fmt.Printf("已发送token: %s\n", token)
 
 	// 写入token
-	if err := os.WriteFile("/tokenList/token.txt", []byte(token), 0666); err != nil {
+	if err := os.WriteFile("tokenList/token.txt", []byte(token), 0666); err != nil {
 		log.Fatal(err)
 	}
 
@@ -242,7 +242,7 @@ func postModify(c *gin.Context) {
 func validToken(reqtoken string) (bool, error) {
 
 	// --- 文件读取 ---
-	localToken, err := os.ReadFile("../tokenList/token.txt")
+	localToken, err := os.ReadFile("tokenList/token.txt")
 	if err != nil {
 		fmt.Println("token 文件读取失败")
 		return false, err
