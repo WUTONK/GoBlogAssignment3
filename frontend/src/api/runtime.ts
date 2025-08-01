@@ -13,7 +13,8 @@
  */
 
 
-export const BASE_PATH = "http://localhost".replace(/\/+$/, "");
+// 改为生产环境 api地址
+export const BASE_PATH = "https://api.wutonk.xyz".replace(/\/+$/, "");
 
 export interface ConfigurationParameters {
     basePath?: string; // override base path
