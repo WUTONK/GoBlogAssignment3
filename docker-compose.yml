@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16.9
+    container_name: blog_postgres
+    environment:
+      POSTGRES_DB: wutonkdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    restart: unless-stopped
+    networks:
+      - blog_network
+
+  backend:
+    build: ./backend
+    container_name: blog_backend
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: wutonkdb
+      DB_USER: postgres
+      DB_PASSWORD: 123456
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    networks:
+      - blog_network
+    volumes:
+      - ./backend/tokenList:/app/tokenList
+
+volumes:
+  postgres_data:
+
+networks:
+  blog_network:
+    driver: bridge 

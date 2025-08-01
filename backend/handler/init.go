@@ -93,7 +93,35 @@ func postModify(c *gin.Context) {
 	}
 
 	// ---初始化---
-	dsn := "user=postgres password=123456 host=localhost port=5432 dbname=wutonkdb sslmode=disable"
+	// 从环境变量读取数据库配置，如果没有则使用默认值
+	dbHost := os.Getenv("DB_HOST")
+	if dbHost == "" {
+		dbHost = "localhost"
+	}
+
+	dbPort := os.Getenv("DB_PORT")
+	if dbPort == "" {
+		dbPort = "5432"
+	}
+
+	dbName := os.Getenv("DB_NAME")
+	if dbName == "" {
+		dbName = "wutonkdb"
+	}
+
+	dbUser := os.Getenv("DB_USER")
+	if dbUser == "" {
+		dbUser = "postgres"
+	}
+
+	dbPassword := os.Getenv("DB_PASSWORD")
+	if dbPassword == "" {
+		dbPassword = "123456"
+	}
+
+	dsn := fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=%s sslmode=disable",
+		dbUser, dbPassword, dbHost, dbPort, dbName)
+
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		panic(err.Error())
