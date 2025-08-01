@@ -13,8 +13,8 @@
  */
 
 
-// 改为生产环境 api地址
-export const BASE_PATH = "https://api.wutonk.xyz".replace(/\/+$/, "");
+// 从环境变量读取生产环境 api 地址
+export const BASE_PATH = (import.meta.env.VITE_API_BASE_URL || "http://localhost").replace(/\/+$/, "");
 
 export interface ConfigurationParameters {
     basePath?: string; // override base path
