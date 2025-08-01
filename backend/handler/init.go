@@ -162,7 +162,7 @@ func postModify(c *gin.Context) {
 			return
 		}
 
-		fmt.Printf("数据库为空")
+		fmt.Printf("数据库为空\n")
 	}
 
 	// ---匹配模式---
@@ -171,6 +171,15 @@ func postModify(c *gin.Context) {
 	case "get":
 		err := db.QueryRow("SELECT context FROM user_context WHERE username = $1", username).Scan(&context)
 		if err != nil {
+			if err == sql.ErrNoRows {
+				// 如果用户不存在，返回空字符串
+				fmt.Printf("用户 '%s' 不存在，返回空context\n", username)
+				c.JSON(http.StatusOK, models.SqlRsp{
+					Context: "",
+				})
+				return
+			}
+
 			fmt.Println("数据get失败!")
 			c.JSON(http.StatusBadRequest, gin.H{"error": err})
 			return
@@ -193,7 +202,18 @@ func postModify(c *gin.Context) {
 		}
 
 		// 插入数据
-		_, err = db.Exec(insertSQL, context, username)
+		var exists bool
+		err := db.QueryRow("SELECT EXISTS(SELECT 1 FROM user_context WHERE username = $1)", username).Scan(&exists)
+		if err != nil {
+			// 错误处理
+		}
+		if exists {
+			// 用户存在，更新
+			_, err = db.Exec("UPDATE user_context SET context = $1 WHERE username = $2", context, username)
+		} else {
+			// 用户不存在，插入
+			_, err = db.Exec("INSERT INTO user_context (username, context) VALUES ($1, $2)", username, context)
+		}
 		if err != nil {
 			c.JSON(http.StatusBadRequest, models.SqlRsp{Context: fmt.Sprintf("用户%s 报文数据append失败! \n", username)})
 			fmt.Println("数据append失败!")
