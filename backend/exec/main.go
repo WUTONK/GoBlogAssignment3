@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	if err := os.WriteFile("../tokenList/token.txt", []byte("tokenFile"), 0666); err != nil {
+	if err := os.WriteFile("/tokenList/token.txt", []byte("tokenFile"), 0666); err != nil {
 		log.Fatal(err)
 	}
 

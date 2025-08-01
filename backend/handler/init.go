@@ -76,7 +76,7 @@ func Login(c *gin.Context) {
 	fmt.Printf("已发送token: %s\n", token)
 
 	// 写入token
-	if err := os.WriteFile("../tokenList/token.txt", []byte(token), 0666); err != nil {
+	if err := os.WriteFile("/tokenList/token.txt", []byte(token), 0666); err != nil {
 		log.Fatal(err)
 	}
 
@@ -93,6 +93,7 @@ func postModify(c *gin.Context) {
 	}
 
 	// ---初始化---
+	// 数据库初始化
 	// 从环境变量读取数据库配置，如果没有则使用默认值
 	dbHost := os.Getenv("DB_HOST")
 	if dbHost == "" {
